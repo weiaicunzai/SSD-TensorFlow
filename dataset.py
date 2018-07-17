@@ -39,6 +39,7 @@ def data_augment(image_dataset, label_dataset):
 
     #standard
     image_dataset = image_dataset.map(tf.image.per_image_standardization)
+
     return image_dataset, label_dataset
 
 
@@ -66,9 +67,13 @@ def cifar100_train(data_dir, batch_size):
 
     image_dataset, labels_dataset = data_augment(image_dataset, labels_dataset)
 
+    #one-hot
+    one_hot = functools.partial(tf.one_hot, depth=100)
+    labels_dataset = labels_dataset.map(one_hot)
+
     dataset = tf.data.Dataset.zip((image_dataset, labels_dataset))
     dataset = dataset.shuffle(buffer_size=10000)
-    dataset = dataset.batch(32)
+    dataset = dataset.batch(batch_size)
 
     return dataset
 
