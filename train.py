@@ -20,15 +20,28 @@ labels_train = keras.utils.to_categorical(labels_train, 100)
 datagen.fit(images_train)
 
 #optimizer
-sgd = keras.optimizers.SGD(lr=0.1, decay=1e-6, momentum=0.9)
+sgd = keras.optimizers.SGD(lr=0.1, momentum=0.9)
 #adam = keras.optimizers.Adam(lr=0.1, decay=1e-6)
+
+
+#learning_rate decay:
+def lr_scheduler(epoch):
+    if epoch < 80:
+        return 0.1
+    elif epoch < 120:
+        return 0.01
+    else:
+        return 0.001
+
 
 net = vgg16_bn()
 net.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
 net.fit_generator(
     datagen.flow(images_train, labels_train, batch_size=BATCH_SZIE),
     steps_per_epoch=len(images_train) / 32,
-    epochs=10
+    epochs=10,
+    callbacks=[lr_scheduler]
 )
 
 net.save_weights('checkpoint/vgg16_bn.h5')
+
