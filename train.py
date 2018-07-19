@@ -1,34 +1,34 @@
 import tensorflow as tf
-import dataset as ds
 from vgg16_bn import vgg16_bn 
+from dataset import *
+from tensorflow.python import keras
 
+import matplotlib.pyplot as plt
 
-
-sess = tf.Session()
 BATCH_SZIE = 32 
 CIFAR100 = "/home/admin-bai/Downloads/cifar-100-python"
 
-def train():
+datagen = keras.preprocessing.image.ImageDataGenerator(
+    horizontal_flip=True,
+    featurewise_center=True,
+    rotation_range=15,
+    width_shift_range=4,
+    featurewise_std_normalization=True
+)
+images_train, labels_train = cifar100_train('/home/admin-bai/Downloads/cifar-100-python')
+labels_train = keras.utils.to_categorical(labels_train, 100)
+datagen.fit(images_train)
 
-    def train_input_fn():
-        dataset = ds.cifar100_train(CIFAR100, BATCH_SZIE)
-        data_iterater = dataset.make_one_shot_iterator()
-        images, labels = data_iterater.get_next()
-        return images, labels
+#optimizer
+sgd = keras.optimizers.SGD(lr=0.1, decay=1e-6, momentum=0.9)
+#adam = keras.optimizers.Adam(lr=0.1, decay=1e-6)
 
-    
+net = vgg16_bn()
+net.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
+net.fit_generator(
+    datagen.flow(images_train, labels_train, batch_size=BATCH_SZIE),
+    steps_per_epoch=len(images_train) / 32,
+    epochs=10
+)
 
-    cifar100_classifier = tf.estimator.Estimator(
-        model_fn=vgg16_bn, model_dir="checkpoint"
-    )
-
-    cifar100_classifier.train(
-        input_fn=train_input_fn,
-        steps=float(50000 / BATCH_SZIE)
-    )
-
-
-
-train()
-
-
+net.save_weights('checkpoint/vgg16_bn.h5')
