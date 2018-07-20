@@ -63,7 +63,7 @@ subset='training' to methods flow and flow_from_directory.
 
 So I installed Keras2.1.5, and using the same version if TensorFlow which
 is 1.4.0, the following code can run without any exceptions:
-```
+```python
 datagen_train = ImageDataGenerator(
     horizontal_flip=True,
     featurewise_center=True,
@@ -81,7 +81,7 @@ update my CUDA8.0 to CUDA9.0, but other programs in my machine aslo need CUDA8.0
 And another example of me decide to stop using TensorFlow as my main deep learning
 framework is this:
 
-```
+```python
 tb = keras.callbacks.TensorBoard(log_dir='log')
 lr_sch = keras.callbacks.LearningRateScheduler(lr_scheduler)
 
@@ -100,7 +100,7 @@ validation datset in fit_generator() method, but in TensorFlow1.4, fit_generator
 don't support generator as validation dataset, which means I have to manually preprocess
 the validation dataset.
 
-```
+```python
 net.fit_generator(
     datagen_train.flow(images_train, labels_train, batch_size=BATCH_SZIE),
     steps_per_epoch=len(images_train) / 32,
