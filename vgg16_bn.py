@@ -22,7 +22,6 @@ def vgg16_bn(num_class=100):
 
     model.add(keras.layers.MaxPool2D(strides=2))
 
-
     #Conv2
     model.add(keras.layers.Conv2D(128, 3, padding='same',
                                   kernel_initializer='he_normal'))

@@ -26,5 +26,3 @@ def cifar100_test(data_dir):
 
     return images, labels
 
-
-cifar100_train('/home/admin-bai/Downloads/cifar-100-python')
