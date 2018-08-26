@@ -1,30 +1,38 @@
-# TensorFlow-VGG
+# SSD-TensorFlow
 
-This is a TensorFlow version implemenation of VGG network, the purpose of this
-repo is to pratice how to use TensorFlow.
+This is a TensorFlow version implemenation of [SSD(Single Shot MultiBox Detector)](https://arxiv.org/abs/1512.02325v5)
+network, the purpose of this repo is to pratice how to use TensorFlow.
 
 ## Abstruct
-I was going to use TensorFlow's low level api to implement this VGG network, but
+I was going to use TensorFlow's low level api to implement this SSD, but
 after I looking into the low level api, I've found that low level api is not that
-easy to use, therefore I decided to use TensorFlow's high level api tensorflow.python.keras
-as my main high level TensorFlow api for daily development. As for the low level api, 
+easy to use, therefore I decided to use TensorFlow's high level api tf.contrib.slim
+as my main high level TensorFlow api for development. As for the low level api, 
 my goal now is to simply understand what these low apis do.
 
 ## Requirement
 TensorFlow 1.4
 Python 3.5
 
-## Things that I want to know about tf.keras API
+# Notations:
 
-- Data preprocessing
-- How to Train a model
-- How to use Tensorboard to debug network(basic functions)
+**tf.contrib will be deprecated**
+according to (this google groups link)[https://groups.google.com/a/tensorflow.org/forum/m/#!msg/announce/qXfsxr2sF-0/jHQ77dr3DAAJ]
 
-# Conclusion
-I've decided quit using TensorFlow for my development of Neuron Network, even the tf.Keras
-api, I will switch to Keras api, and using Tensorflow as backend.Cause The tf.keras api is
-slightly different than the standard Keras api, for example:
-tf.kerar:
+```
+TensorFlow’s contrib module has grown beyond what can be maintained and supported in a single repository. Larger projects are better maintained separately, while we will incubate smaller extensions along with the main TensorFlow code. Consequently, as part of releasing TensorFlow 2.0, we will stop distributing tf.contrib. We will work with the respective owners on detailed migration plans in the coming months, including how to publicise your TensorFlow extension in our community pages and documentation. For each of the contrib modules we will either 
+a) integrate the project into TensorFlow; 
+b) move it to a separate repository or 
+c) remove it entirely. 
+This does mean that all of tf.contrib will be deprecated, and we will stop adding new tf.contrib projects today. We are looking for owners/maintainers for a number of projects currently in tf.contrib, please contact us (reply to this email) if you are interested. 
+```
+
+In other words, tf.contrib.slim could be removed in tf 2.0, we dont know for sure.
+
+I will be using tf.contrib.slim heigh level api to write the code, 
+the reason not to use tf.Keras are as follows
+
+in tf.kerar:
 Class ImageDataGenerator
 ```python
 __init__(
@@ -113,6 +121,5 @@ net.fit_generator(
 
 Maybe there is another workaround, but I am tired of tring, this is not the only problem I've 
 encountered that was caused by the mess of TensorFlow high level api.
-Therefore, I decide to switch to standard Keras API(version 2.15) which was competitable with 
-TensorFLow1.4.Maybe TensorFlow would have a better high level api in the future, util then, I'll
-stick with Keras.
+Therefore, Standard Keras API(version 2.15) is a better choice which was competitable with 
+TensorFLow1.4. So tf.keras is not suitable for me.
