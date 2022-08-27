@@ -5,6 +5,16 @@ from torchvision.transforms import transforms
 
 
 
+class ContrastiveLearningViewGenerator:
+    """Take two random crops of one image as the query and key."""
+
+    def __init__(self, base_transform):
+        self.base_transform = base_transform
+
+    def __call__(self, x):
+        return [self.base_transform(x), self.base_transform(x)]
+
+
 
 def simclr_transforms(img_size):
     # In this work, we sequentially apply three simple augmentations:
@@ -22,15 +32,24 @@ def simclr_transforms(img_size):
     s = 2
     size = img_size
     color_jitter = transforms.ColorJitter(0.8 * s, 0.8 * s, 0.8 * s, 0.2 * s)
-    data_transforms = transforms.Compose([transforms.RandomResizedCrop(size=size),
+    data_transforms = transforms.Compose([    
+                                              transforms.RandomResizedCrop(size=(size, size)),
                                               transforms.RandomHorizontalFlip(),
                                               transforms.RandomApply([color_jitter], p=0.8),
                                               transforms.GaussianBlur(kernel_size=int(0.1 * size)),
                                               transforms.ToTensor()])
+
+    data_transforms = ContrastiveLearningViewGenerator(data_transforms)
     return data_transforms
-    # print('ff')
 
 
+#trans = simclr_transforms(96)
+#from PIL import Image
+#image = Image.open('/data/hdd1/by/pytorch-camvid/fff.jpg')
+#print(trans(image))
+# trans = simclr_transforms(96)
+
+# image = Image.open('')
 
 #def cifar100_train(data_dir):
 #
