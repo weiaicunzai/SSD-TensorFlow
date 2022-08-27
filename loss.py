@@ -9,7 +9,6 @@ class InfoNCE(nn.Module):
         super().__init__()
         self.n_views = n_views
         self.temperature = temperature
-        self.cross_entropy = nn.CrossEntropyLoss()
 
 
 
@@ -46,8 +45,9 @@ class InfoNCE(nn.Module):
 
         logits = logits / self.temperature
 
-        loss = self.cross_entropy(logits, labels)
-        return loss
+        #loss = self.cross_entropy(logits, labels)
+        #return loss
+        return logits, labels
 
 
 #infonce_loss= InfoNCE()
