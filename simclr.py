@@ -10,15 +10,20 @@ class SimCLR(torch.nn.Module):
     def __init__(self, model):
         super().__init__()
         dim_mlp = model.classifier[-1].in_features
-        fc = model.classifier[-1]
-        model.classifier[-1] = nn.Sequential(nn.Linear(dim_mlp, dim_mlp), nn.ReLU(), fc)
-        print(model)
+        # fc = model.classifier[-1]
+        fc = nn.Sequential(nn.Linear(dim_mlp, dim_mlp), nn.ReLU(), model.classifier[-1])
+        #model.classifier = model.classifier[:-1]
+        model.classifier[-1] = fc
+        print(model.classifier)
+        #for 
+        # print(model)
 
         self.model = model
 
 
     def forward(self, x):
         x = self.model(x)
+        return x
 
 
 
