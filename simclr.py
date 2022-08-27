@@ -11,10 +11,13 @@ class SimCLR(torch.nn.Module):
         super().__init__()
         dim_mlp = model.classifier[-1].in_features
         # fc = model.classifier[-1]
-        fc = nn.Sequential(nn.Linear(dim_mlp, dim_mlp), nn.ReLU(), model.classifier[-1])
+        fc = nn.Sequential(
+            nn.Linear(dim_mlp, dim_mlp), 
+            nn.ReLU(), 
+            model.classifier[-1]
+        )
         #model.classifier = model.classifier[:-1]
         model.classifier[-1] = fc
-        print(model.classifier)
         #for 
         # print(model)
 
