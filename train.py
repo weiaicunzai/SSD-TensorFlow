@@ -58,31 +58,32 @@ import torchmetrics
 #
 #
 #
-def eval(dataloader, model):
-    infonce_loss = InfoNCE()
-    ce_loss = nn.CrossEntropyLoss()
-    metric = torchmetrics.Accuracy()
-
-
-    total_loss = 0
-    for images, _ in dataloader:
-        images = torch.cat(images, dim=0)
-        with torch.no_grad():
-            features = model(images)
-            logits, labels = infonce_loss(features)
-            loss = ce_loss(logits, labels)
-            total_loss += loss
-            metric.update(logits.softmax(dim=-1), labels)
-
-
-        print(total_loss / len(dataloader.dataset))
-
-        acc = metric.compute()
-        print(acc)
-
-
-    return acc
-
+#def eval(dataloader, model):
+#    infonce_loss = InfoNCE()
+#    ce_loss = nn.CrossEntropyLoss()
+#    metric = torchmetrics.Accuracy().cuda()
+#
+#
+#    total_loss = 0
+#    for images, _ in dataloader:
+#        images = torch.cat(images, dim=0).cuda()
+#        with torch.no_grad():
+#            features = model(images)
+#            logits, labels = infonce_loss(features)
+#            loss = ce_loss(logits, labels)
+#            total_loss += loss
+#            print(logits.device, features.device)
+#            metric.update(logits.softmax(dim=-1), labels)
+#
+#
+#        print(total_loss / len(dataloader.dataset))
+#
+#        acc = metric.compute()
+#        print(acc)
+#
+#
+#    return acc
+#
             
 
 def train(epochs, dataloader, model, optimizer, lr_scheduler):
@@ -96,10 +97,12 @@ def train(epochs, dataloader, model, optimizer, lr_scheduler):
 
 
     best_acc = 0
-    for i in range(epochs):
+    for epoch in range(epochs):
+        metric = torchmetrics.Accuracy().cuda()
         for images, _ in dataloader:
             #print(images.shape)
-            images = torch.cat(images, dim=0)
+            images = torch.cat(images, dim=0).cuda()
+            print(images.shape)
             # print(images.shape)
             # print(images.shape)
             # count += images.shape[0]
@@ -115,11 +118,19 @@ def train(epochs, dataloader, model, optimizer, lr_scheduler):
             optimizer.zero_grad()
             print('{:04f}'.format(loss.item()))
 
-        acc = eval(dataloader, model)
+            metric.update(logits.softmax(dim=-1), labels)
+
+
+        #acc = eval(dataloader, model)
+        #print(acc)
+        acc = metric.compute()
         print(acc)
+        print()
 
         if best_acc < acc:
             best_acc = acc
+            #if not os.path.exists(save_path):
+            os.makedirs(save_path, exist_ok=True)
             torch.save(model.state_dict(), os.path.join(save_path, '{}.pth'.format(epoch)))
 
 
@@ -140,14 +151,14 @@ def main():
     
 
 
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=2**6, num_workers=8)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=2**10, num_workers=8)
 
     # We use ResNet-50 as the base encoder net- work, 
     # and a 2-layer MLP projection head to project the 
     # representation to a 128-dimensional latent space.
     net = alexnet(128)
 
-    simclr = SimCLR(net)
+    simclr = SimCLR(net).cuda()
     # print(simclr)
     optimizer = torch.optim.Adam(simclr.parameters(), lr, weight_decay=1e-4)
     lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=len(dataloader), eta_min=0,
