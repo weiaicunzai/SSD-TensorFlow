@@ -102,7 +102,7 @@ def train(epochs, dataloader, model, optimizer, lr_scheduler):
         for images, _ in dataloader:
             #print(images.shape)
             images = torch.cat(images, dim=0).cuda()
-            print(images.shape)
+            #print(images.shape)
             # print(images.shape)
             # print(images.shape)
             # count += images.shape[0]
@@ -124,14 +124,15 @@ def train(epochs, dataloader, model, optimizer, lr_scheduler):
         #acc = eval(dataloader, model)
         #print(acc)
         acc = metric.compute()
-        print(acc)
+        print('ACC:', acc.item())
         print()
 
-        if best_acc < acc:
-            best_acc = acc
             #if not os.path.exists(save_path):
-            os.makedirs(save_path, exist_ok=True)
-            torch.save(model.state_dict(), os.path.join(save_path, '{}.pth'.format(epoch)))
+        if epoch > 50:
+            if best_acc < acc:
+                best_acc = acc
+                os.makedirs(save_path, exist_ok=True)
+                torch.save(model.state_dict(), os.path.join(save_path, '{}.pth'.format(epoch)))
 
 
 
@@ -139,7 +140,7 @@ def train(epochs, dataloader, model, optimizer, lr_scheduler):
 
 def main():
     lr = 0.0003
-    epochs = 100
+    epochs = 200
 
     #print(path)
     #import sys; sys.exit()
@@ -151,7 +152,7 @@ def main():
     
 
 
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=2**10, num_workers=8)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=2**11, num_workers=8)
 
     # We use ResNet-50 as the base encoder net- work, 
     # and a 2-layer MLP projection head to project the 
